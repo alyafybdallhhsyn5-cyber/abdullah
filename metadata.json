@@ -1,0 +1,6 @@
+{
+  "name": "تاريخ وحاضر الشرق الأوسط | تصميم عبدالله حسين",
+  "description": "منصة وثائقية تفاعلية تستعرض تاريخ وحاضر دول الشرق الأوسط عبر خريطة تفاعلية وجداول زمنية شاملة. تصميم ومتابعة: عبدالله حسين (n.0a21).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

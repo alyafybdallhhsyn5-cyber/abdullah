@@ -1,0 +1,15 @@
+{
+  "appId": "com.abdullahhussein.middleeasthistory",
+  "appName": "موسوعة تاريخ الشرق الأوسط",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  }
+}
