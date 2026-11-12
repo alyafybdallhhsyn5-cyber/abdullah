@@ -35,6 +35,13 @@ jobs:
           npx cap add android || true
           npx cap sync android
 
+      # --- الخطوة الجديدة لتوليد الأيقونات وشاشات البداية ---
+      - name: Generate App Icons and Splash Screens
+        run: |
+          npm install @capacitor/assets --save-dev
+          npx capacitor-assets generate --android
+      # -----------------------------------------------------
+
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
@@ -51,7 +58,6 @@ jobs:
           fi
 
           # إضافة كود الاستبعاد في ملف build.gradle الرئيسي للمشروع
-          # هذا الحل يمنع Gradle من تحميل النسخ القديمة المتعارضة
           BUILD_FILE="android/build.gradle"
           if [ -f "$BUILD_FILE" ]; then
             cat << 'EOT' >> "$BUILD_FILE"
