@@ -39,28 +39,14 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
-      - name: Force Fix Java & Kotlin Versions
+      - name: Force Java 21 in All Gradle Files
         run: |
-          # تعديل توافق الجافا إلى 17 في ملفات Gradle لضمان التوافق التام
-          find android -name "build.gradle" -exec sed -i 's/JavaVersion.VERSION_21/JavaVersion.VERSION_17/g' {} + || true
-          find android -name "build.gradle" -exec sed -i 's/java 21/java 17/g' {} + || true
-
-          # فرض إصدار موحد لمكتبة كوتلن لمنع حدوث أي تعارض نهائياً
-          BUILD_FILE="android/build.gradle"
-          if [ -f "$BUILD_FILE" ]; then
-            cat << 'EOT' >> "$BUILD_FILE"
-
-          configurations.all {
-              resolutionStrategy {
-                  force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
-                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
-                  force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
-              }
-          }
-          EOT
-          fi
+          # فرض استخدام Java 21 في جميع ملفات البناء والإعدادات لتتوافق مع مكتبات كاباسيتور الحديثة
+          find android -name "*.gradle" -exec sed -i 's/JavaVersion.VERSION_17/JavaVersion.VERSION_21/g' {} + || true
+          find android -name "*.gradle" -exec sed -i 's/java 17/java 21/g' {} + || true
+          find android -name "*.gradle" -exec sed -i 's/1.8/21/g' {} + || true
 
       - name: Build Android APK
         run: |
