@@ -35,25 +35,16 @@ jobs:
           npx cap add android || true
           npx cap sync android
 
-      # 1. توليد الأيقونات وشاشة البداية
       - name: Generate App Icons and Splash Screens
         run: |
           npm install @capacitor/assets --save-dev --force --legacy-peer-deps
           npx capacitor-assets generate --android
 
-      # 2. تثبيت إضافة شاشة البداية الرسمية وإعدادها
+      # تثبيت إضافة شاشة البداية الرسمية (بدون تعديل يدوي على MainActivity)
       - name: Setup Official Splash Screen
         run: |
           npm install @capacitor/splash-screen --legacy-peer-deps --force
           npx cap sync android
-          
-          # حقن الكود في MainActivity.java لإجبار شاشة البداية على الظهور
-          MAIN_ACTIVITY="android/app/src/main/java/com/abdullahhussein/middleeasthistory/MainActivity.java"
-          if [ -f "$MAIN_ACTIVITY" ]; then
-            # إضافة استدعاء مكتبة SplashScreen
-            sed -i '/import com.getcapacitor.BridgeActivity;/a import com.capacitorjs.plugins.splashscreen.SplashScreenPlugin;' "$MAIN_ACTIVITY"
-            sed -i '/public class MainActivity extends BridgeActivity {/a \ \ \ \ @Override\n    public void onCreate(android.os.Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        try {\n            this.registerPlugin(SplashScreenPlugin.class);\n        } catch (Exception e) {}\n    }' "$MAIN_ACTIVITY"
-          fi
 
       - name: Setup Java
         uses: actions/setup-java@v5
