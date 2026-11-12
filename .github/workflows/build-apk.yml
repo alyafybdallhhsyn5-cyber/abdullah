@@ -24,12 +24,12 @@ jobs:
 
       - name: Install Dependencies & Build Web
         run: |
+          npm cache clean --force
           npm install --legacy-peer-deps
           npm run build
 
       - name: Install Capacitor & Generate Android Platform
         run: |
-          # تثبيت أدوات كاباسيتور إجبارياً لضمان توفر الأوامر
           npm install --legacy-peer-deps @capacitor/core @capacitor/cli @capacitor/android
           npx cap init app-name com.app.net --web-dir dist --yes || true
           npx cap add android || true
