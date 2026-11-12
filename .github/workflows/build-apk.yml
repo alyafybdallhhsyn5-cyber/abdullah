@@ -14,14 +14,14 @@ jobs:
       - name: Extract Zipped Folders
         run: |
           echo "Checking and extracting zips..."
-          if [ -f "src.zip" ]; then
-            unzip -o src.zip
-          fi
-          if [ -f "public.zip" ]; then
-            unzip -o public.zip
-          fi
-          if [ -f "android.zip" ]; then
+          if [ -f "src.zip" ]; then unzip -o src.zip; fi
+          if [ -f "public.zip" ]; then unzip -o public.zip; fi
+          if [ -f "android.zip" ]; then 
             unzip -o android.zip
+          fi
+          # التأكد من مكان مجلد android وإذا كان بداخل مجلد فرعي
+          if [ ! -d "android" ] && [ -d "android-main" ]; then
+            mv android-main android
           fi
           ls -la
 
