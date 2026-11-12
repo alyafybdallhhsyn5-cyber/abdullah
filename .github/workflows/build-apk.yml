@@ -41,9 +41,8 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
-      - name: Fix Kotlin Conflict for Java 21
+      - name: Fix Kotlin Duplicate Classes Permanently
         run: |
-          # إضافة حل تعارض كوتلن لملف الـ build.gradle لتوحيد الإصدارات
           BUILD_FILE="android/build.gradle"
           if [ -f "$BUILD_FILE" ]; then
             cat << 'EOT' >> "$BUILD_FILE"
@@ -54,8 +53,16 @@ jobs:
                   force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
                   force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
               }
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
           }
           EOT
+          fi
+
+          # إضافة حل لمنع أخطاء فحص التكرار في ملف gradle.properties
+          PROP_FILE="android/gradle.properties"
+          if [ -f "$PROP_FILE" ]; then
+            echo "android.bundle.enableUncompressedNativeLibs=false" >> "$PROP_FILE"
           fi
 
       - name: Build Android APK
