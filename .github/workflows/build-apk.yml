@@ -25,7 +25,6 @@ jobs:
       - name: Install Dependencies & Build Web
         run: |
           npm cache clean --force
-          # تم استخدام --force و --legacy-peer-deps لتجاوز مشكلة تعارض esbuild و vite
           npm install --force --legacy-peer-deps
           npm run build
 
@@ -36,12 +35,25 @@ jobs:
           npx cap add android || true
           npx cap sync android
 
-      # --- الخطوة الجديدة لتوليد الأيقونات وشاشات البداية ---
       - name: Generate App Icons and Splash Screens
         run: |
           npm install @capacitor/assets --save-dev --force --legacy-peer-deps
           npx capacitor-assets generate --android
-      # -----------------------------------------------------
+
+      # --- تعديل ملفات الأندرويد لإظهار شاشة البداية لمدة 3 ثواني وإخفاء الشريط العلوي ---
+      - name: Force Splash Screen Settings
+        run: |
+          STYLES_FILE="android/app/src/main/res/values/styles.xml"
+          if [ -f "$STYLES_FILE" ]; then
+            # إضافة خلفية لشاشة البداية
+            sed -i 's/<item name="android:background">.*<\/item>/<item name="android:background">@drawable\/splash<\/item>/g' "$STYLES_FILE" || true
+          fi
+          
+          # إضافة تأخير لمدة 3 ثواني في ملف MainActivity
+          MAIN_ACTIVITY="android/app/src/main/java/com/app/net/MainActivity.java"
+          if [ -f "$MAIN_ACTIVITY" ]; then
+            sed -i 's/super.onCreate(savedInstanceState);/super.onCreate(savedInstanceState);\n        try { Thread.sleep(3000); } catch (InterruptedException e) { e.printStackTrace(); }/g' "$MAIN_ACTIVITY"
+          fi
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -51,14 +63,12 @@ jobs:
 
       - name: Fix Kotlin Duplicate Classes Permanently
         run: |
-          # إضافة إعدادات التوافق في ملف gradle.properties
           PROP_FILE="android/gradle.properties"
           if [ -f "$PROP_FILE" ]; then
             echo "android.useAndroidX=true" >> "$PROP_FILE"
             echo "android.enableJetifier=true" >> "$PROP_FILE"
           fi
 
-          # إضافة كود الاستبعاد في ملف build.gradle الرئيسي للمشروع
           BUILD_FILE="android/build.gradle"
           if [ -f "$BUILD_FILE" ]; then
             cat << 'EOT' >> "$BUILD_FILE"
