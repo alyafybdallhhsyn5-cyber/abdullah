@@ -58,12 +58,7 @@ jobs:
           }
           EOT
           fi
-
-          # إضافة حل لمنع أخطاء فحص التكرار في ملف gradle.properties
-          PROP_FILE="android/gradle.properties"
-          if [ -f "$PROP_FILE" ]; then
-            echo "android.bundle.enableUncompressedNativeLibs=false" >> "$PROP_FILE"
-          fi
+          # تم حذف الجزء الخاص بـ gradle.properties لأنه هو سبب المشكلة
 
       - name: Build Android APK
         run: |
