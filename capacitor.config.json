@@ -1,8 +1,20 @@
 {
   "appId": "com.abdullahhussein.middleeasthistory",
-  "appName": "موسوعة تاريخ الشرق الأوسط",
+  "appName": "موسوعة عبدالله",
   "webDir": "dist",
   "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 3000,
+      "launchAutoHide": true,
+      "backgroundColor": "#FFFFFF",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    }
+  },
   "server": {
     "androidScheme": "https",
     "cleartext": true
