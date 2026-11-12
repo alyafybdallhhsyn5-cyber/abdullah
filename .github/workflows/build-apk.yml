@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
 
 jobs:
   build:
@@ -11,6 +11,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Unzip Project Folders if needed
+        run: |
+          if [ -f "src.zip" ]; then unzip -o src.zip -d src; fi
+          if [ -f "public.zip" ]; then unzip -o public.zip -d public; fi
+          if [ -f "android.zip" ]; then unzip -o android.zip; fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -18,7 +24,7 @@ jobs:
 
       - name: Install Dependencies & Build Web
         run: |
-          npm install
+          npm install --legacy-peer-deps
           npm run build
 
       - name: Setup Java
