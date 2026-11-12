@@ -39,14 +39,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
-
-      - name: Fix Java Version in Gradle
-        run: |
-          # تعديل توافق الجافا في ملفات الإعدادات ليتوافق تماماً مع الإصدار 17
-          find android -name "build.gradle" -exec sed -i 's/sourceCompatibility JavaVersion.VERSION_21/sourceCompatibility JavaVersion.VERSION_17/g' {} +
-          find android -name "build.gradle" -exec sed -i 's/targetCompatibility JavaVersion.VERSION_21/targetCompatibility JavaVersion.VERSION_17/g' {} +
-          find android -name "build.gradle" -exec sed -i 's/java 21/java 17/g' {} +
+          java-version: '21'
 
       - name: Build Android APK
         run: |
