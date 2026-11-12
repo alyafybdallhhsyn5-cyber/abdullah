@@ -40,19 +40,23 @@ jobs:
           npm install @capacitor/assets --save-dev --force --legacy-peer-deps
           npx capacitor-assets generate --android
 
-      # --- تعديل ملفات الأندرويد لإظهار شاشة البداية لمدة 3 ثواني وإخفاء الشريط العلوي ---
-      - name: Force Splash Screen Settings
+      # --- الحل الجذري لشاشة البداية ---
+      - name: Force Splash Screen to Appear
         run: |
-          STYLES_FILE="android/app/src/main/res/values/styles.xml"
-          if [ -f "$STYLES_FILE" ]; then
-            # إضافة خلفية لشاشة البداية
-            sed -i 's/<item name="android:background">.*<\/item>/<item name="android:background">@drawable\/splash<\/item>/g' "$STYLES_FILE" || true
+          RES_DIR="android/app/src/main/res"
+          
+          # 1. نسخ الصورة التي ولدتها الأداة إلى مجلد drawable الأساسي
+          if [ -d "$RES_DIR/drawable" ]; then
+            cp "$RES_DIR/drawable/splash.png" "$RES_DIR/drawable/launch_splash.png" || true
           fi
           
-          # إضافة تأخير لمدة 3 ثواني في ملف MainActivity
-          MAIN_ACTIVITY="android/app/src/main/java/com/app/net/MainActivity.java"
-          if [ -f "$MAIN_ACTIVITY" ]; then
-            sed -i 's/super.onCreate(savedInstanceState);/super.onCreate(savedInstanceState);\n        try { Thread.sleep(3000); } catch (InterruptedException e) { e.printStackTrace(); }/g' "$MAIN_ACTIVITY"
+          # 2. التأكد من ملف styles.xml وربط الصورة فيه
+          STYLES_FILE="$RES_DIR/values/styles.xml"
+          if [ -f "$STYLES_FILE" ]; then
+            # حذف أي إعدادات خلفية سابقة لتجنب التعارض
+            sed -i '/android:background/d' "$STYLES_FILE"
+            # إضافة الصورة كخلفية
+            sed -i 's/<style name="AppTheme.NoActionBarLaunch">/<style name="AppTheme.NoActionBarLaunch">\n        <item name="android:background">@drawable\/launch_splash<\/item>/g' "$STYLES_FILE"
           fi
 
       - name: Setup Java
