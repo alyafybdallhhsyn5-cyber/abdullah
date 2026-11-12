@@ -11,11 +11,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Unzip Project Folders if needed
+      - name: Extract Zipped Folders
         run: |
-          if [ -f "src.zip" ]; then unzip -o src.zip -d src; fi
-          if [ -f "public.zip" ]; then unzip -o public.zip -d public; fi
-          if [ -f "android.zip" ]; then unzip -o android.zip; fi
+          echo "Checking and extracting zips..."
+          if [ -f "src.zip" ]; then
+            unzip -o src.zip
+          fi
+          if [ -f "public.zip" ]; then
+            unzip -o public.zip
+          fi
+          if [ -f "android.zip" ]; then
+            unzip -o android.zip
+          fi
+          ls -la
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
