@@ -11,17 +11,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Extract Zipped Folders
+      - name: Extract Web Zips
         run: |
-          echo "Extracting project files..."
           if [ -f "src.zip" ]; then unzip -o src.zip; fi
           if [ -f "public.zip" ]; then unzip -o public.zip; fi
-          if [ -f "android.zip" ]; then 
-            unzip -o android.zip
-          fi
-          # إذا كان المجلد المستخرج بداخله مجلد android
-          if [ -d "android-master" ]; then mv android-master android; fi
-          if [ -d "android-main" ]; then mv android-main android; fi
           ls -la
 
       - name: Setup Node.js
@@ -33,6 +26,13 @@ jobs:
         run: |
           npm install --legacy-peer-deps
           npm run build
+
+      - name: Generate Android Project Automatically
+        run: |
+          # التأكد من تثبيت وتوليد مجلد android وcapacitor بشكل نظيف
+          npx cap init app-name com.app.net --web-dir dist --yes || true
+          npx cap add android || true
+          npx cap sync android
 
       - name: Setup Java
         uses: actions/setup-java@v4
