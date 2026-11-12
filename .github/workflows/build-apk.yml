@@ -43,22 +43,28 @@ jobs:
 
       - name: Fix Kotlin Duplicate Classes Permanently
         run: |
-          # إضافة سطر تفعيل التوافق التلقائي لمكتبات Kotlin
+          # إضافة إعدادات التوافق في ملف gradle.properties
           PROP_FILE="android/gradle.properties"
           if [ -f "$PROP_FILE" ]; then
-            echo "kotlin.stdlib.jdk.variants.version.alignment=true" >> "$PROP_FILE"
+            echo "android.useAndroidX=true" >> "$PROP_FILE"
+            echo "android.enableJetifier=true" >> "$PROP_FILE"
           fi
 
-          # إضافة حل جذري في ملف build.gradle الرئيسي لإجبار استخدام إصدار واحد
+          # إضافة كود الاستبعاد في ملف build.gradle الرئيسي للمشروع
+          # هذا الحل يمنع Gradle من تحميل النسخ القديمة المتعارضة
           BUILD_FILE="android/build.gradle"
           if [ -f "$BUILD_FILE" ]; then
             cat << 'EOT' >> "$BUILD_FILE"
 
-          configurations.all {
-              resolutionStrategy {
-                  force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
-                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
-                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+          allprojects {
+              configurations.all {
+                  resolutionStrategy {
+                      force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+                      force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+                      force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+                  }
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
               }
           }
           EOT
