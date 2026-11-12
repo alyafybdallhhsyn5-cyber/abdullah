@@ -35,28 +35,24 @@ jobs:
           npx cap add android || true
           npx cap sync android
 
+      # 1. توليد الأيقونات وشاشة البداية
       - name: Generate App Icons and Splash Screens
         run: |
           npm install @capacitor/assets --save-dev --force --legacy-peer-deps
           npx capacitor-assets generate --android
 
-      # --- الحل الجذري لشاشة البداية ---
-      - name: Force Splash Screen to Appear
+      # 2. تثبيت إضافة شاشة البداية الرسمية وإعدادها
+      - name: Setup Official Splash Screen
         run: |
-          RES_DIR="android/app/src/main/res"
+          npm install @capacitor/splash-screen --legacy-peer-deps --force
+          npx cap sync android
           
-          # 1. نسخ الصورة التي ولدتها الأداة إلى مجلد drawable الأساسي
-          if [ -d "$RES_DIR/drawable" ]; then
-            cp "$RES_DIR/drawable/splash.png" "$RES_DIR/drawable/launch_splash.png" || true
-          fi
-          
-          # 2. التأكد من ملف styles.xml وربط الصورة فيه
-          STYLES_FILE="$RES_DIR/values/styles.xml"
-          if [ -f "$STYLES_FILE" ]; then
-            # حذف أي إعدادات خلفية سابقة لتجنب التعارض
-            sed -i '/android:background/d' "$STYLES_FILE"
-            # إضافة الصورة كخلفية
-            sed -i 's/<style name="AppTheme.NoActionBarLaunch">/<style name="AppTheme.NoActionBarLaunch">\n        <item name="android:background">@drawable\/launch_splash<\/item>/g' "$STYLES_FILE"
+          # حقن الكود في MainActivity.java لإجبار شاشة البداية على الظهور
+          MAIN_ACTIVITY="android/app/src/main/java/com/abdullahhussein/middleeasthistory/MainActivity.java"
+          if [ -f "$MAIN_ACTIVITY" ]; then
+            # إضافة استدعاء مكتبة SplashScreen
+            sed -i '/import com.getcapacitor.BridgeActivity;/a import com.capacitorjs.plugins.splashscreen.SplashScreenPlugin;' "$MAIN_ACTIVITY"
+            sed -i '/public class MainActivity extends BridgeActivity {/a \ \ \ \ @Override\n    public void onCreate(android.os.Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        try {\n            this.registerPlugin(SplashScreenPlugin.class);\n        } catch (Exception e) {}\n    }' "$MAIN_ACTIVITY"
           fi
 
       - name: Setup Java
