@@ -39,14 +39,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21'
-
-      - name: Force Java 21 in All Gradle Files
-        run: |
-          # فرض استخدام Java 21 في جميع ملفات البناء والإعدادات لتتوافق مع مكتبات كاباسيتور الحديثة
-          find android -name "*.gradle" -exec sed -i 's/JavaVersion.VERSION_17/JavaVersion.VERSION_21/g' {} + || true
-          find android -name "*.gradle" -exec sed -i 's/java 17/java 21/g' {} + || true
-          find android -name "*.gradle" -exec sed -i 's/1.8/21/g' {} + || true
+          java-version: '17'
 
       - name: Build Android APK
         run: |
