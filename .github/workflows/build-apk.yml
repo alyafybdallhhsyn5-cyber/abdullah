@@ -41,6 +41,23 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
+      - name: Fix Kotlin Conflict for Java 21
+        run: |
+          # إضافة حل تعارض كوتلن لملف الـ build.gradle لتوحيد الإصدارات
+          BUILD_FILE="android/build.gradle"
+          if [ -f "$BUILD_FILE" ]; then
+            cat << 'EOT' >> "$BUILD_FILE"
+
+          configurations.all {
+              resolutionStrategy {
+                  force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
+                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
+              }
+          }
+          EOT
+          fi
+
       - name: Build Android APK
         run: |
           cd android
